@@ -8,6 +8,7 @@
 
 ### 修复
 - 知识库文档数达到上限时不再答非所问：单库 `max_documents` 可配置之后，上传超限文档仍按字面量「at most 100」匹配错误文案，只有上限恰好是默认值 100 的库才报对，其余（如 2、500）会返回 409 `KNOWLEDGE_BASE_LIMIT`「每个用户最多可创建 20 个知识库」；现按两条报错各自的稳定措辞区分，超限一律正确返回 `KNOWLEDGE_DOC_LIMIT`
+- macOS：`octop service stop` 之后再次 `octop service start` 不再报 `Could not find service`——`stop` 用 `bootout` 卸载了 launchd 标签，而 `start` 只执行 `kickstart`（仅对已加载的服务有效），现回退到 `bootstrap` 从磁盘重新加载 plist（#1007）
 - 知识库文档重命名保留存储键的文件后缀：改名去掉 `.pdf` 等后缀后，原文下载/预览会 404、删除也会留下孤儿文件；现按 `create_text_document` 的既有做法补回原后缀，目录改名不受影响 (#1107)
 - 会话列表接口 `GET /api/agents/{id}/threads` 的 `limit` 增加 1–200 边界（与消息分页沿用同一上限）：此前负数会被 SQLite 解释成「不限制」，一次返回该用户的全部会话，`limit=0` 又返回空列表；越界请求现在统一拒绝
 
